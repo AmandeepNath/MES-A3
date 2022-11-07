@@ -14,7 +14,6 @@
 #include "common.h"
 
 int string_test(char *p);
-int an_led_demo_a2(int count, int delay);
 
 
 void _an_lab3(int action)
