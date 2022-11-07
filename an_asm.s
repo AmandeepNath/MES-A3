@@ -55,8 +55,6 @@ loop1:
 
 
 
-    
-
 out1:
 
     pop     {lr}
