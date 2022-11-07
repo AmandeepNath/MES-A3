@@ -1,21 +1,41 @@
 /*
-* C to assembler menu hook
-*
+* FILE : an_hook.c
+* PROJECT : SENG2010 - Assignment #3
+* PROGRAMMER : Amandeep Nath
+* FIRST VERSION : 2022-10-06
+* DESCRIPTION : 
+* 
 */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <ctype.h>
+
 #include "common.h"
-int add_test(int x, int y);
-void AddTest(int action)
+
+int string_test(char *p);
+int an_led_demo_a2(int count, int delay);
+
+
+void _an_lab3(int action)
 {
-if(action==CMD_SHORT_HELP) return;
-if(action==CMD_LONG_HELP) {
-printf("Addition Test\n\n"
-"This command tests new addition function\n"
-);
-return;
+  int fetch_status;
+
+  char *destptr;
+
+  fetch_status = fetch_string_arg(&destptr);
+
+  if(fetch_status) {
+      // Default logic here
+      destptr = "Test";
+  }
+
+
+  ;
+
+  printf("%d\n\n", string_test(destptr));
+
+
 }
-printf("add_test returned: %d\n", add_test(99, 87) );
-}
-ADD_CMD("add", AddTest,"Test the new add function")
+ADD_CMD("Lab3", _an_lab3,"Test the new lab 3 function")
+
