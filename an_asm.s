@@ -35,13 +35,17 @@
 
 a3_Game:
 
-    push    {lr}
+    push    {r4-r7, lr}                 @ Put aside registers we want to restore later
+
+    mov     r4, r0                      @ Set aside r4 to use for delay
 
 
-    
+
+    mov     r6, r2                      @ Set aside r6 to use for target
 
 
-loop: 
+
+pattern_loop: 
 
     ldrb     r1, [r0]                    @ Dereference the character r0 points to
     
