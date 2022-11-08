@@ -31,24 +31,46 @@ void _an_A3(int action)
 
 
 
+  // first argument for the delay parameter
+  uint32_t delay;
 
   int fetch_status;
 
-  char *destptr;
-
-
-
-  fetch_status = fetch_string_arg(&destptr);
+  fetch_status = fetch_uint32_arg(&delay);
 
   if(fetch_status) {
-      // Default logic here
-      destptr = "Test";
+  	// default delay
+  	delay = 0xFFFFF;
   }
 
 
-  ;
 
-  printf("%d\n\n", a3_Game(destptr));
+  // Second argument for the pattern
+  char *pattern;
+
+  fetch_status = fetch_string_arg(&pattern);
+
+  if(fetch_status) {
+      // Default pattern
+      pattern = "43567011";
+  }
+
+
+  // Third argument for the target parameter
+  uint32_t target;
+
+  fetch_status = fetch_uint32_arg(&target);
+
+  if(fetch_status) {
+  	// default target
+  	target = 0;
+  }
+
+
+
+  a3_Game(delay, pattern, target);
+
+  printf("You win\n\n");
 
 
 }
