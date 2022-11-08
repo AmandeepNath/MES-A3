@@ -9,7 +9,6 @@
 
 
 
-
 @@ Function Header Block
     .align 2                            @ Code alignment - 2^n alignment (n=2)
                                         @ This causes the assembler to use 4 byte alignment
@@ -17,24 +16,24 @@
     .syntax unified                     @ Sets the instruction set to the new unified ARM + THUMB
                                         @ instructions. The default is divided (separate instruction sets)
 
-    .global string_test                 @ Make the symbol name for the function visible to the linker
+    .global a3_Game                 @ Make the symbol name for the function visible to the linker
 
     .code 16                            @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func                         @ Specifies that the following symbol is the name of a THUMB
                                         @ encoded function. Necessary for interlinking between ARM and THUMB code.
 
-    .type string_test, %function     @ Declares that the symbol is a function (not strictly required)
+    .type a3_Game, %function     @ Declares that the symbol is a function (not strictly required)
 
 
-@ Function Declaration : int an_led_demo_a2(int count, int delay)
+@ Function Declaration : int a3_Game(int delay, char *pattern, int target)
 @
-@ Input: r0 (i.e. r0 holds the bit array)
+@ Input: r0, r1, r2 (i.e. r0 holds the delay, r1 holds the led pattern, r2 holds the target led)
 @ Returns: r0
 @
 
-@ Here is the actual string_test function
+@ Here is the actual a3_Game function
 
-string_test:
+a3_Game:
 
     push    {lr}
 
@@ -42,7 +41,7 @@ string_test:
     
 
 
-loop1: 
+loop: 
 
     ldrb     r1, [r0]                    @ Dereference the character r0 points to
     
@@ -55,7 +54,7 @@ loop1:
 
 
 
-out1:
+out:
 
     pop     {lr}
 
@@ -90,6 +89,6 @@ delay_1oop:
 
 
       
-.size an_led_demo_a2, .-an_led_demo_a2  @@ - symbol size (not strictly required, but makes the debugger happy)
+.size a3_Game, .-a3_Game  @@ - symbol size (not strictly required, but makes the debugger happy)
 
 .end                                    @ Assembly file ended by single .end directive on its own line

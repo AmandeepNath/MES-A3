@@ -13,14 +13,29 @@
 
 #include "common.h"
 
-int string_test(char *p);
+int a3_Game(int delay, char *pattern, int target);
 
 
-void _an_lab3(int action)
+void _an_A3(int action)
 {
+
+  // The prompt that is shown when the user uses the help command with anGame 
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Play the blinking lights game!\n\n"
+	   "This function will allow you to play the blinking lights game\n"
+	   );
+
+    return;
+  }
+
+
+
   int fetch_status;
 
   char *destptr;
+
+
 
   fetch_status = fetch_string_arg(&destptr);
 
@@ -32,9 +47,9 @@ void _an_lab3(int action)
 
   ;
 
-  printf("%d\n\n", string_test(destptr));
+  printf("%d\n\n", a3_Game(destptr));
 
 
 }
-ADD_CMD("Lab3", _an_lab3,"Test the new lab 3 function")
+ADD_CMD("anGame", anGame,"Play the blinking lights game")
 
