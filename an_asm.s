@@ -47,9 +47,9 @@ a3_Game:
 
 pattern_loop: 
 
-    ldrb     r1, [r0]                    @ Dereference the character r0 points to
+    ldrb     r1, [r0]                   @ Dereference the character r0 points to
     
-    add     r0, #1                          @ the check is happening to the previous value, works but should be before addition
+    add     r0, #1                      @ the check is happening to the previous value, works but should be before addition
     
 
 
@@ -58,11 +58,12 @@ pattern_loop:
 
 
 
+
 out:
 
-    pop     {lr}
+    pop     {r4-r7, lr}                 @ Bring all the register values back
 
-    bx      lr
+    bx      lr                          @ Return (Branch eXchange) to the address in the link register (lr)
 
 
 
