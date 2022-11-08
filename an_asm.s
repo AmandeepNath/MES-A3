@@ -47,14 +47,14 @@ a3_Game:
 
 pattern_loop: 
 
-    ldrb     r1, [r0]                   @ Dereference the character r0 points to
+    ldrb     r5, [r1]                   @ Dereference the character r1 points to
     
-    add     r0, #1                      @ the check is happening to the previous value, works but should be before addition
+    add     r1, #1                      @ the check is happening to the previous value, works but should be before addition
     
 
 
-    cmp     r1, #0
-    bgt     loop1
+    cmp     r5, #0                      @ compare r5 to 0 to see if end of string is reached 
+    bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
 
 
 

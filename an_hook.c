@@ -74,5 +74,5 @@ void _an_A3(int action)
 
 
 }
-ADD_CMD("anGame", anGame,"Play the blinking lights game")
+ADD_CMD("anGame", _an_A3,"Play the blinking lights game")
 
