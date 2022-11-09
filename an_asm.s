@@ -50,6 +50,10 @@ pattern_loop:
     ldrb    r5, [r9, r8]                @ Dereference the character r9 points to
     
 
+    
+    cmp     r5, #0                      @ compare the ascii value of the current offset to 0 to see if it is null
+    beq     pattern_checkpoint          @ if the value is null go to pattern_checkpoint, continue if not
+
     mov     r7, r5                      @ Copy the ascii value of r5 to r7
 
     sub     r7, r7, #48                 @ subtract 48 from r7 to obtain the led index
@@ -73,10 +77,11 @@ pattern_loop:
 
     add     r8, r8, #1                  @ add 1 to the offset of the string array
 
+
+pattern_checkpoint:
+
     cmp     r5, #0                      @ compare r5 to 0 to see if end of string is reached 
     bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
-
-
 
 
 
