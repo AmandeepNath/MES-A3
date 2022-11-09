@@ -35,15 +35,19 @@
 
 a3_Game:
 
-    push    {r4-r9, lr}                 @ Put aside registers we want to restore later
+    push    {r4-r11, lr}                 @ Put aside registers we want to restore later
 
     mov     r4, r0                      @ Set aside r4 to use for delay
+
+    mov     r9, r1                      @ copy the pattern into r9
 
     mov     r6, r2                      @ Set aside r6 to use for target
 
     mov     r8, #0                      @ copy 0 into r8 to use for the offset counter
 
-    mov     r9, r1                      @ copy the pattern into r9
+    mov     r10, #0                     @ copy 0 into r10 to use for winning led counter loop
+
+    mov     r11, #2                     @ copy 2 into r11 for blink twice counter
 
 pattern_loop: 
 
@@ -78,17 +82,64 @@ pattern_loop:
     add     r8, r8, #1                  @ add 1 to the offset of the string array
 
 
+    @mov     r0, #0                      @ copy 0 to r0 to use for BSP_PB_GetState
+    @bl      BSP_PB_GetState             @ call BSP_PB_GetState
+    @cmp     r0, #0
+    @beq     out
+
+
 pattern_checkpoint:
 
     cmp     r5, #0                      @ compare r5 to 0 to see if end of string is reached 
     bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
 
 
+    @mov     r8, #0                     @ reset the offset value to 0 to create infinite loop
+
+
+
+
+win_led_loop_on:
+
+    mov     r0, r10                     @ r0 holds our argument for the LED toggle function, so pass I pass the index (r10)
+    bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
+
+    add     r10, r10, #1                @ add 1 to the led counter
+
+    cmp     r10, #8                     @ compare r10 to 8 to check if the led counter is on the last led
+    blt     win_led_loop_on             @ if the led counter is less than 8, branch back to win_led_loop
+
+    ldr     r0, =0xFFFFF                @ copy our delay to r0 so the busy delay can use the delay value
+    bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
+    mov     r10, #0                     @ copy 0 to r10 to reset our counter for the led
+    
+
+win_led_loop_off:
+
+
+    mov     r0, r10                     @ r0 holds our argument for the LED toggle function, so pass I pass the index (r10)
+    bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
+
+    add     r10, r10, #1                @ add 1 to the led counter
+
+    cmp     r10, #8                     @ compare r10 to 8 to check if the led counter is on the last led
+    blt     win_led_loop_off            @ if the led counter is less than 8, branch back to win_led_loop
+
+    ldr     r0, =0xFFFFF                @ copy our delay to r0 so the busy delay can use the delay value
+    bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
+    mov     r10, #0                     @ copy 0 to r10 to reset our counter for the led
+
+    subs     r11, r11, #1               @ subtract one from the twice blink counter
+    bgt     win_led_loop_on             @ branch back to win loop if the value if greater than 0
+                          
+
 
 
 out:
 
-    pop     {r4-r9, lr}                 @ Bring all the register values back
+    pop     {r4-r11, lr}                @ Bring all the register values back
 
     bx      lr                          @ Return (Branch eXchange) to the address in the link register (lr)
 
