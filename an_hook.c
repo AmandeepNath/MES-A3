@@ -13,7 +13,7 @@
 
 #include "common.h"
 
-int a3_Game(int delay, char *pattern, int target);
+int a3_Game(int delay, char *pattern);
 
 
 void _an_A3(int action)
@@ -40,7 +40,7 @@ void _an_A3(int action)
 
   if(fetch_status) {
   	// default delay
-  	delay = 0xFFFFF;
+  	delay = 0xFFFFFF;
   }
 
 
@@ -68,7 +68,7 @@ void _an_A3(int action)
 
 
 
-  a3_Game(delay, pattern, target);
+  a3_Game(delay, pattern);
 
   printf("You win\n\n");
 

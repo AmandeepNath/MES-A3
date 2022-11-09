@@ -35,23 +35,45 @@
 
 a3_Game:
 
-    push    {r4-r7, lr}                 @ Put aside registers we want to restore later
+    push    {r4-r9, lr}                 @ Put aside registers we want to restore later
 
     mov     r4, r0                      @ Set aside r4 to use for delay
 
-
+    mov     r9, r1
 
     mov     r6, r2                      @ Set aside r6 to use for target
 
 
+    mov     r8, #0
 
 pattern_loop: 
 
-    ldrb     r5, [r1]                   @ Dereference the character r1 points to
-    
-    add     r1, #1                      @ the check is happening to the previous value, works but should be before addition
+    ldrb    r5, [r9, r8]                @ Dereference the character r1 points to
     
 
+    mov     r7, r5                      @ Copy the ascii value of r5 to r7
+
+    sub     r7, r7, #48                 @ subtract 48 from r7 to obtain the led index
+
+
+    mov     r0, r7                      @ r0 holds our argument for the LED toggle function, so pass I pass the index (r7)
+    bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
+
+
+    mov     r0, r4                      @ copy our delay to r0 so the busy delay can use the delay value
+    bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
+
+    mov     r0, r7                      @ r0 holds our argument for the LED toggle function, so pass I pass the index (r7)
+    bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
+
+
+    mov     r0, r4                      @ copy our delay to r0 so the busy delay can use the delay value
+    bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
+
+    @add     r1, r1, #1                  @ add 1 to r1 to move to next index
+    add     r8, r8, #1
 
     cmp     r5, #0                      @ compare r5 to 0 to see if end of string is reached 
     bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
