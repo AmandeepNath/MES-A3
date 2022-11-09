@@ -39,16 +39,15 @@ a3_Game:
 
     mov     r4, r0                      @ Set aside r4 to use for delay
 
-    mov     r9, r1
-
     mov     r6, r2                      @ Set aside r6 to use for target
 
+    mov     r8, #0                      @ copy 0 into r8 to use for the offset counter
 
-    mov     r8, #0
+    mov     r9, r1                      @ copy the pattern into r9
 
 pattern_loop: 
 
-    ldrb    r5, [r9, r8]                @ Dereference the character r1 points to
+    ldrb    r5, [r9, r8]                @ Dereference the character r9 points to
     
 
     mov     r7, r5                      @ Copy the ascii value of r5 to r7
@@ -72,8 +71,7 @@ pattern_loop:
     bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
 
 
-    @add     r1, r1, #1                  @ add 1 to r1 to move to next index
-    add     r8, r8, #1
+    add     r8, r8, #1                  @ add 1 to the offset of the string array
 
     cmp     r5, #0                      @ compare r5 to 0 to see if end of string is reached 
     bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
@@ -81,9 +79,11 @@ pattern_loop:
 
 
 
+
+
 out:
 
-    pop     {r4-r7, lr}                 @ Bring all the register values back
+    pop     {r4-r9, lr}                 @ Bring all the register values back
 
     bx      lr                          @ Return (Branch eXchange) to the address in the link register (lr)
 

@@ -13,7 +13,7 @@
 
 #include "common.h"
 
-int a3_Game(int delay, char *pattern);
+int a3_Game(int delay, char *pattern, int target);
 
 
 void _an_A3(int action)
@@ -68,7 +68,7 @@ void _an_A3(int action)
 
 
 
-  a3_Game(delay, pattern);
+  a3_Game(delay, pattern, target);
 
   printf("You win\n\n");
 
