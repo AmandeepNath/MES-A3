@@ -54,12 +54,11 @@ pattern_loop:
     ldrb    r5, [r9, r8]                @ Dereference the character r9 points to
     
 
-    
     cmp     r5, #0                      @ compare the ascii value of the current offset to 0 to see if it is null
     beq     pattern_checkpoint          @ if the value is null go to pattern_checkpoint, continue if not
 
-    mov     r7, r5                      @ Copy the ascii value of r5 to r7
 
+    mov     r7, r5                      @ Copy the ascii value of r5 to r7
     sub     r7, r7, #48                 @ subtract 48 from r7 to obtain the led index
 
 
@@ -71,6 +70,11 @@ pattern_loop:
     bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
 
 
+    bl      BSP_PB_GetState             @ call BSP_PB_GetState
+    cmp     r0, #1                      @ check to see if the button is pressed
+    beq     button_check                @ if the button is pressed go to button_check
+
+
     mov     r0, r7                      @ r0 holds our argument for the LED toggle function, so pass I pass the index (r7)
     bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
 
@@ -79,14 +83,14 @@ pattern_loop:
     bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
 
 
+    bl      BSP_PB_GetState             @ call BSP_PB_GetState
+    cmp     r0, #1                      @ check to see if the button is pressed
+    beq     button_check                @ if the button is pressed go to button_check
+
+
     add     r8, r8, #1                  @ add 1 to the offset of the string array
 
-
-    @mov     r0, #0                      @ copy 0 to r0 to use for BSP_PB_GetState
-    @bl      BSP_PB_GetState             @ call BSP_PB_GetState
-    @cmp     r0, #0
-    @beq     out
-
+        
 
 pattern_checkpoint:
 
@@ -94,8 +98,19 @@ pattern_checkpoint:
     bgt     pattern_loop                @ branch back to pattern_loop if r5 is greater than 0
 
 
-    @mov     r8, #0                     @ reset the offset value to 0 to create infinite loop
+    mov     r8, #0                      @ reset the offset value to 0 to create infinite loop
+    bl      pattern_loop
 
+
+
+button_check:
+
+    cmp     r6, r7                      @ compare to see if target led is the same as current led
+    beq     win_led_loop_on             @ if equal, go to win condition (win_led_loop_on)
+
+
+    cmp     r6, r7                      @ compare to see if target led is the same as current led
+    bne     lose_led_on                 @ if not equal, go to lose condition (lose_led_on)
 
 
 
@@ -104,37 +119,50 @@ win_led_loop_on:
     mov     r0, r10                     @ r0 holds our argument for the LED toggle function, so pass I pass the index (r10)
     bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
 
+
     add     r10, r10, #1                @ add 1 to the led counter
+
 
     cmp     r10, #8                     @ compare r10 to 8 to check if the led counter is on the last led
     blt     win_led_loop_on             @ if the led counter is less than 8, branch back to win_led_loop
 
-    ldr     r0, =0xFFFFF                @ copy our delay to r0 so the busy delay can use the delay value
+
+    ldr     r0, =0xFFFFFF               @ copy our delay to r0 so the busy delay can use the delay value
     bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
 
     mov     r10, #0                     @ copy 0 to r10 to reset our counter for the led
     
 
 win_led_loop_off:
 
-
     mov     r0, r10                     @ r0 holds our argument for the LED toggle function, so pass I pass the index (r10)
     bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
 
+
     add     r10, r10, #1                @ add 1 to the led counter
+
 
     cmp     r10, #8                     @ compare r10 to 8 to check if the led counter is on the last led
     blt     win_led_loop_off            @ if the led counter is less than 8, branch back to win_led_loop
 
-    ldr     r0, =0xFFFFF                @ copy our delay to r0 so the busy delay can use the delay value
+
+    ldr     r0, =0xFFFFFF               @ copy our delay to r0 so the busy delay can use the delay value
     bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
+
 
     mov     r10, #0                     @ copy 0 to r10 to reset our counter for the led
 
+
     subs     r11, r11, #1               @ subtract one from the twice blink counter
     bgt     win_led_loop_on             @ branch back to win loop if the value if greater than 0
-                          
+                       
 
+
+lose_led_on:
+
+    mov     r0, r6                      @ r0 holds our argument for the LED toggle function, so pass I pass the index (r6)
+    bl      BSP_LED_Toggle              @ call the led toggle function to turn it on/off
 
 
 out:

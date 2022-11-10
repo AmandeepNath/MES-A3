@@ -40,7 +40,7 @@ void _an_A3(int action)
 
   if(fetch_status) {
   	// default delay
-  	delay = 0xFFFFF;
+  	delay = 0xFFFFFF;
   }
 
 
