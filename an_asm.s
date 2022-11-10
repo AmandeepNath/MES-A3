@@ -108,7 +108,7 @@ turn_all_off:
 
 
         mov     r8, #0                      @ reset the offset value to 0 to create infinite loop
-        bl      pattern_loop
+        bl      pattern_loop                @ branch back to pattern_loop
 
 
 
@@ -116,6 +116,7 @@ button_check:
 
     mov     r0, r7                          @ copy current led index to r7
     bl      BSP_LED_Toggle                  @ toggle the specified light on
+
 
     cmp     r6, r7                          @ compare to see if target led is the same as current led
     beq     win_led_loop_on                 @ if equal, go to win condition (win_led_loop_on)
@@ -170,7 +171,7 @@ button_check:
         subs     r11, r11, #1               @ subtract one from the twice blink counter
         bgt     win_led_loop_on             @ branch back to win loop if the value if greater than 0
 
-        b       exit_program
+        b       exit_program                @ branch to exit_program
 
 
     lose_led_on:
