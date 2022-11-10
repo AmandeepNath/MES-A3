@@ -3,7 +3,10 @@
 * PROJECT : SENG2010 - Assignment #3
 * PROGRAMMER : Amandeep Nath
 * FIRST VERSION : 2022-10-06
-* DESCRIPTION : 
+* DESCRIPTION : This program will allow the user to play a simple game. The user can specify a delay, pattern, and target.
+*               This pattern will repeat until the user presses a button, if the button is pressed on the target, the user
+*               wins. If the button is not pressed on the target, the user loses. All lights will blink twice if it is a win.
+*               The target light will stay on until the next game if the user loses.
 * 
 */
 
@@ -13,6 +16,7 @@
 
 #include "common.h"
 
+// Prototype for the blinking game function
 int a3_Game(int delay, char *pattern, int target);
 
 
@@ -40,7 +44,7 @@ void _an_A3(int action)
 
   if(fetch_status) {
   	// default delay
-  	delay = 0xFFFFFF;
+  	delay = 0x1F4;
   }
 
 
@@ -63,14 +67,14 @@ void _an_A3(int action)
 
   if(fetch_status) {
   	// default target
-  	target = 3;
+  	target = 6;
   }
 
 
-
+  // Call the game function
   a3_Game(delay, pattern, target);
 
-  printf("You win\n\n");
+  printf("Play again?\n\n");
 
 
 }
