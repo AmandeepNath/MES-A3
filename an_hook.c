@@ -13,101 +13,76 @@
 
 #include "common.h"
 
-// Prototype for the blinking game function
-int lab6(int user_input);
+// Prototype for the tilt game function
+int _an_a4_tick_setup(int delay, int target, int game_time);
 
-void _an_lab6(int action)
+
+void _an_a4(int action)
 {
 
-  // The prompt that is shown when the user uses the help command with lab6 
+  // The prompt that is shown when the user uses the help command with xxTilt 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
-    printf("Check accelerometer\n\n"
-	   "This function will allow you to check the accelerometer\n"
+    printf("Tilt Game\n\n"
+	   "This function will allow you to play the tilt game\n"
 	   );
 
     return;
   }
 
-  uint32_t user_input;
+  uint32_t delay;
 
   int fetch_status;
 
-  fetch_status = fetch_uint32_arg(&user_input);
-
-  if(fetch_status) {
-  	// default target
-  	user_input = 0;
-  }
-
-
-  for (int i = 0; i < 100; i++)
-  {
-    printf("Accel Value: %d\n\n", lab6(user_input));
-  }
-
-
-
-}
-ADD_CMD("lab6", _an_lab6,"Accelerometer Test")
-
-
-
-
-
-int _an_lab_setup(int lab7_input);
-
-
-void _an_lab7(int action)
-{
-
-  // The prompt that is shown when the user uses the help command with lab7 
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
-    printf("Tick Handler\n\n"
-	   "This function will allow you to play with the tick handler\n"
-	   );
-
-    return;
-  }
-
-  uint32_t lab7_input;
-
-  int fetch_status;
-
-  fetch_status = fetch_uint32_arg(&lab7_input);
+  fetch_status = fetch_uint32_arg(&delay);
 
   if(fetch_status) {
   	// default value
-  	lab7_input = 5000;
+  	delay = 500;
+  }
+
+  uint32_t target;
+
+  fetch_status = fetch_uint32_arg(&target);
+
+  if(fetch_status) {
+  	// default value
+  	target = 5;
+  }
+
+  uint32_t game_time;
+
+  fetch_status = fetch_uint32_arg(&game_time);
+
+  if(fetch_status) {
+  	// default value
+  	game_time = 10;
   }
 
 
   
-  printf("Tick handler: %d\n\n", _an_lab_setup(lab7_input));
+  _an_a4_tick_setup(delay, target, game_time);
+
+
+  printf("Play Again?\n\n");
   
 
-
-
 }
-ADD_CMD("lab7", _an_lab7,"Tick Handler")
+ADD_CMD("anTilt", _an_a4,"Tilt Game")
 
 
 
 
 
+int _an_a4_tick();
 
-
-
-int _an_lab_tick();
-
-void lab7tick(int action)
+void a4_tick(int action)
 {
 
-  // The prompt that is shown when the user uses the help command with lab7 
+  // The prompt that is shown when the user uses the help command with A4tick 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
-    printf("Tick Handler\n\n"
+    printf("A4 Tick Handler\n\n"
 	   "This function will allow you to play with the tick handler\n"
 	   );
 
@@ -115,12 +90,8 @@ void lab7tick(int action)
   }
 
 
-
+  printf("A4 Tick handler: %d\n\n", _an_a4_tick());
   
-  printf("Tick handler: %d\n\n", _an_lab_tick());
-  
-
-
 
 }
-ADD_CMD("ticktest", lab7tick,"Tick Handler")
+ADD_CMD("A4tick", a4_tick,"A4 Tick Handler")
