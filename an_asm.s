@@ -11,7 +11,7 @@ a4_accel_ticks: .word 0
 .equ    I2C_Address, 0x32
 .equ    X_HI, 0x29
 .equ    Y_HI, 0x2B
-.equ    accel_delay, 0x32
+.equ    accel_delay, 0xFA
 .equ    game_time_constant, 0x3E8
 
 
@@ -109,7 +109,7 @@ _an_a4_tick_setup:
 
 _an_a4_tick:
 
-    push    {r4-r8, lr}                     @ Put aside registers we want to restore later
+    push    {r4-r5, lr}                     @ Put aside registers we want to restore later
     
     mov     r4, r1                          @ copy target into r4
 
@@ -117,7 +117,7 @@ _an_a4_tick:
     ldr     r0, [r1]                        @ load current ticks value 
 
     subs    r0, r0, #1                      @ subtract 1 from the ticks
-    ble     out                             @ go to out if it is 0
+    ble     exit_tick                       @ go to exit_tick if it is 0
 
 
     str     r0, [r1]                        @ store value back into r1
@@ -128,33 +128,11 @@ _an_a4_tick:
     subs    r0, r0, #1                      @ subtract 1 from ticks
     str     r0, [r1]                        @ store the current decremented count
 
-    bgt     out                             @ go to out if the tick isn't 0
-
-
+    bgt     exit_tick                       @ go to exit_tick if the tick isn't 0
 
     
+
     bl      accelero_check                  @ go to accelero_check to see which led to turn on
-
-
-
-    @mov     r6, r0
-@
-    @cmp     r0, r7
-    @beq     exit_check
-@
-@
-    @mov     r0, r7
-    @bl      BSP_LED_Off
-@
-@
-    @mov     r0, r6                          @ copy LED index 1 to r0
-    @bl      BSP_LED_On                      @ call BSP_LED_Toggle to turn LED on/off
-@
-    @mov     r7, r0
-
-
-
-exit_check:
 
 
 
@@ -172,9 +150,9 @@ exit_check:
     @str     r0, [r1]                        @ store current value back into r1
 
 
-out:
+exit_tick:
 
-    pop     {r4-r8, lr}                    @ Bring all the register values back
+    pop     {r4-r5, lr}                    @ Bring all the register values back
 
     bx      lr                             @ Return (Branch eXchange) to the address in the link register (lr)
 
@@ -201,6 +179,7 @@ accelero_check:
     mov     r5, r0                          @ copy the current Y accelerometer value to r5
 
 
+
     
     cmp     r4, #-33                        @ compare X accelerometer reading to -33
     ble     very_negative_x                 @ if accelerometer reading is less than -33, branch to very_negative_x
@@ -210,7 +189,7 @@ accelero_check:
     bgt     very_positive_x                 @ if accelerometer reading is greater than 33, branch to very_positive_x
 
 
-    cmp     r4, #-33                        @ compare X accelerometer reading to -33
+    cmp     r4, #-32                        @ compare X accelerometer reading to -33
     bgt     close_to_0                      @ if accelerometer reading is greater than -33, branch to close_to_0
 
  
@@ -226,7 +205,7 @@ very_negative_x:
     cmp     r5, #33                         @ compare Y accelerometer reading to 33
     bgt     led_5                           @ if reading is greater than 33, branch to led_5
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
+    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
     bgt     led_3                           @ if reading is greater than -33, branch to led_3
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
@@ -241,7 +220,7 @@ very_positive_x:
     cmp     r5, #33                         @ compare Y accelerometer reading to 33
     bgt     led_6                           @ if reading is greater than 33, branch to led_6
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
+    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
     bgt     led_4                           @ if reading is greater than -33, branch to led_4
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
@@ -256,7 +235,7 @@ close_to_0:
     cmp     r5, #33                         @ compare Y accelerometer reading to 33
     bgt     led_7                           @ if reading is greater than 33, branch to led_7
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
+    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
     bgt     led_3                           @ if reading is greater than -33, branch to led_3
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
@@ -264,52 +243,90 @@ close_to_0:
 
 led_0:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #0                          @ copy LED index 0 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_1:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #1                          @ copy LED index 1 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_2:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #2                          @ copy LED index 2 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_3:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #3                          @ copy LED index 3 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_4:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #4                          @ copy LED index 4 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_5:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #5                          @ copy LED index 5 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_6:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #6                          @ copy LED index 6 to r0
     bl      BSP_LED_On                      @ turn specified LED on
+
     bl      exit                            @ go to exit to leave function
+
 
 led_7:
 
+
+    bl      all_off                         @ call all_off to turn off all LED's
+
     mov     r0, #7                          @ copy LED index 7 to r0
     bl      BSP_LED_On                      @ turn specified LED on
-    bl      exit                            @ go to exit to leave function
 
+    bl      exit                            @ go to exit to leave function
 
 
 exit:
@@ -317,6 +334,37 @@ exit:
     pop     {r4-r7, lr}                     @ Bring all the register values back
 
     bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
+
+
+
+
+
+
+
+all_off:
+
+    push    {r4, lr}                        @ Put aside registers we want to restore later
+
+    mov     r4, #0                          @ copy 0 to r4 to use for LED counter
+
+    all_off_loop:
+
+        mov     r0, r4                      @ copy LED counter into r0
+        bl      BSP_LED_Off                 @ turn off specified LED
+
+        add     r4, r4, #1                  @ add 1 to LED counter
+
+        cmp     r4, #8                      @ compare r4 to 8
+        ble     all_off_loop                @ if r4 is less than 8, go back to all_off_loop, otherwise continue 
+
+
+exit_all_off:
+
+    pop     {r4, lr}                        @ Bring all the register values back
+
+    bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
+
+
 
 
 
