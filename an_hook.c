@@ -47,7 +47,7 @@ void _an_a4(int action)
 
   if(fetch_status) {
   	// default value
-  	target = 5;
+  	target = 7;
   }
 
   uint32_t game_time;
