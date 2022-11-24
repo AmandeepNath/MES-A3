@@ -241,7 +241,7 @@ accelero_check:
 
     
     cmp     r4, #negative_constant          @ compare X accelerometer reading to the negative constant
-    ble     very_negative_x                 @ if accelerometer reading is less than the negative constant, branch to very_negative_x
+    blt     very_negative_x                 @ if accelerometer reading is less than the negative constant, branch to very_negative_x
 
 
     cmp     r4, #positive_constant          @ compare X accelerometer reading to the positive_constant
@@ -259,7 +259,7 @@ very_negative_x:
 
 
     cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
-    ble     led_1                           @ if reading is less than the negative constant, branch to led_1
+    blt     led_1                           @ if reading is less than the negative constant, branch to led_1
 
     cmp     r5, #positive_constant          @ compare Y accelerometer reading to the positive_constant
     bgt     led_5                           @ if reading is greater than the positive_constant, branch to led_5
@@ -289,7 +289,7 @@ close_to_0:
 
 
     cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
-    ble     led_0                           @ if reading is less than the negative constant, branch to led_0
+    blt     led_0                           @ if reading is less than the negative constant, branch to led_0
 
     cmp     r5, #positive_constant          @ compare Y accelerometer reading to the positive_constant
     bgt     led_7                           @ if reading is greater than the positive_constant, branch to led_7
