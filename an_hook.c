@@ -3,7 +3,9 @@
 * PROJECT : SENG2010 - Assignment #4
 * PROGRAMMER : Amandeep Nath
 * FIRST VERSION : 2022-11-17
-* DESCRIPTION : This program will allow the user to play a simple game.
+* DESCRIPTION : This program will allow the user to play a simple game. In this game the user can use the board
+*               to move an LED in cricle. If they land the LED and hold it on the target, the user wins.
+*               If they are unable to do this in the specified time, they lose.
 * 
 */
 
@@ -17,6 +19,20 @@
 int _an_a4_tick_setup(int delay, int target, int game_time);
 
 
+
+
+/*
+* FUNCTION    : _an_a4
+*
+* DESCRIPTION : This function is used to setup the tilt game
+*
+* PARAMETERS  :	delay				: target			: game_time
+*				        int delay	        : delay
+*				        int target	      : target
+*			          int	game_time		  : game time
+* 
+* RETURNS	  : NONE
+*/
 void _an_a4(int action)
 {
 
@@ -74,8 +90,19 @@ ADD_CMD("anTilt", _an_a4,"Tilt Game")
 
 
 
+// Prototype for the tickfunction
 int _an_a4_tick();
 
+
+/*
+* FUNCTION    : a4_tick
+*
+* DESCRIPTION : This function is used to run a tick
+*
+* PARAMETERS  :	NONE
+* 
+* RETURNS	  : NONE
+*/
 void a4_tick(int action)
 {
 

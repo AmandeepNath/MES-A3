@@ -1,3 +1,5 @@
+@ Initialize the variables we want to use
+
 .data
 
 a4_delay: .word 0
@@ -15,6 +17,9 @@ a4_accel_ticks: .word 0
 .equ    Y_HI, 0x2B
 .equ    accel_delay, 0xFA
 .equ    game_time_constant, 0x3E8
+.equ    negative_constant, -0x1E
+.equ    positive_constant, 0x1E
+.equ    win_delay, 0x666666
 
 
 
@@ -127,7 +132,7 @@ _an_a4_tick_setup:
 
 _an_a4_tick:
 
-    push    {r4-r7, lr}                     @ Put aside registers we want to restore later
+    push    {r4-r6, lr}                     @ Put aside registers we want to restore later
 
 
     ldr     r1, =a4_ticks                   @ load address of a4_ticks into r1
@@ -189,7 +194,7 @@ exit_target_check:
     mov     r0, #accel_delay                @ reset the accel tick value
     str     r0, [r1]                        @ store the value into a4_accel_ticks
 
-    bl      exit_tick
+    bl      exit_tick                       @ branch to exit tick
 
 
 lose_led:
@@ -201,7 +206,7 @@ lose_led:
 exit_tick:
 
 
-    pop     {r4-r7, lr}                    @ Bring all the register values back
+    pop     {r4-r6, lr}                    @ Bring all the register values back
 
     bx      lr                             @ Return (Branch eXchange) to the address in the link register (lr)
 
@@ -209,10 +214,15 @@ exit_tick:
 
 
 
-
+@ Function Declaration : int accelero_check
+@
+@ Input: NONE
+@ Returns: r0 (LED index)
+@
+@ Here is the actual function
 accelero_check:
 
-    push    {r4-r7, lr}                     @ Put aside registers we want to restore later
+    push    {r4-r6, lr}                     @ Put aside registers we want to restore later
 
     mov     r0, #I2C_Address                @ copy I2C address into r0
     mov     r1, #X_HI                       @ use r1 to hold high bit value of accelerometer
@@ -230,16 +240,16 @@ accelero_check:
 
 
     
-    cmp     r4, #-33                        @ compare X accelerometer reading to -33
-    ble     very_negative_x                 @ if accelerometer reading is less than -33, branch to very_negative_x
+    cmp     r4, #negative_constant          @ compare X accelerometer reading to the negative constant
+    ble     very_negative_x                 @ if accelerometer reading is less than the negative constant, branch to very_negative_x
 
 
-    cmp     r4, #33                         @ compare X accelerometer reading to 33
-    bgt     very_positive_x                 @ if accelerometer reading is greater than 33, branch to very_positive_x
+    cmp     r4, #positive_constant          @ compare X accelerometer reading to the positive_constant
+    bgt     very_positive_x                 @ if accelerometer reading is greater than the positive_constant, branch to very_positive_x
 
 
-    cmp     r4, #-32                        @ compare X accelerometer reading to -33
-    bgt     close_to_0                      @ if accelerometer reading is greater than -33, branch to close_to_0
+    cmp     r4, #negative_constant          @ compare X accelerometer reading to the negative constant
+    bgt     close_to_0                      @ if accelerometer reading is greater than the negative constant, branch to close_to_0
 
  
     bl      exit                            @ branch to exit if previous comparisons don't happen
@@ -248,14 +258,14 @@ accelero_check:
 very_negative_x:
 
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
-    ble     led_1                           @ if reading is less than -33, branch to led_1
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    ble     led_1                           @ if reading is less than the negative constant, branch to led_1
 
-    cmp     r5, #33                         @ compare Y accelerometer reading to 33
-    bgt     led_5                           @ if reading is greater than 33, branch to led_5
+    cmp     r5, #positive_constant          @ compare Y accelerometer reading to the positive_constant
+    bgt     led_5                           @ if reading is greater than the positive_constant, branch to led_5
 
-    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
-    bgt     led_3                           @ if reading is greater than -33, branch to led_3
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    bgt     led_3                           @ if reading is greater than the negative constant, branch to led_3
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
 
@@ -263,14 +273,14 @@ very_negative_x:
 very_positive_x:
 
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
-    ble     led_2                           @ if reading is less than -33, branch to led_2
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    ble     led_2                           @ if reading is less than the negative constant, branch to led_2
 
-    cmp     r5, #33                         @ compare Y accelerometer reading to 33
-    bgt     led_6                           @ if reading is greater than 33, branch to led_6
+    cmp     r5, #positive_constant          @ compare Y accelerometer reading to the positive_constant
+    bgt     led_6                           @ if reading is greater than the positive_constant, branch to led_6
 
-    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
-    bgt     led_4                           @ if reading is greater than -33, branch to led_4
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    bgt     led_4                           @ if reading is greater than the negative constant, branch to led_4
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
 
@@ -278,14 +288,14 @@ very_positive_x:
 close_to_0:
 
 
-    cmp     r5, #-33                        @ compare Y accelerometer reading to -33
-    ble     led_0                           @ if reading is less than -33, branch to led_0
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    ble     led_0                           @ if reading is less than the negative constant, branch to led_0
 
-    cmp     r5, #33                         @ compare Y accelerometer reading to 33
-    bgt     led_7                           @ if reading is greater than 33, branch to led_7
+    cmp     r5, #positive_constant          @ compare Y accelerometer reading to the positive_constant
+    bgt     led_7                           @ if reading is greater than the positive_constant, branch to led_7
 
-    cmp     r5, #-32                        @ compare Y accelerometer reading to -33
-    bgt     led_3                           @ if reading is greater than -33, branch to led_3
+    cmp     r5, #negative_constant          @ compare Y accelerometer reading to the negative constant
+    bgt     led_3                           @ if reading is greater than the negative constant, branch to led_3
 
     bl      exit                            @ branch to exit if previous comparisons don't happen
 
@@ -398,39 +408,20 @@ exit:
 
     mov     r0, r6                          @ copy LED index from r6 to r0 for use in the tick function
 
-    pop     {r4-r7, lr}                     @ Bring all the register values back
+    pop     {r4-r6, lr}                     @ Bring all the register values back
 
     bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
 
 
 
 
-all_on:
 
-    push    {r4, lr}                        @ Put aside registers we want to restore later
-
-    mov     r4, #0                          @ copy 0 to r4 to use for LED counter
-
-    all_on_loop:
-
-        mov     r0, r4                      @ copy LED counter into r0
-        bl      BSP_LED_On                  @ turn off specified LED
-
-        add     r4, r4, #1                  @ add 1 to LED counter
-
-        cmp     r4, #8                      @ compare r4 to 8
-        ble     all_on_loop                 @ if r4 is less than 8, go back to all_off_loop, otherwise continue 
-
-
-exit_all_on:
-
-    pop     {r4, lr}                        @ Bring all the register values back
-
-    bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
-
-
-
-
+@ Function Declaration : int all_off
+@
+@ Input: NONE
+@ Returns: r0
+@
+@ Here is the actual function
 all_off:
 
     push    {r4, lr}                        @ Put aside registers we want to restore later
@@ -460,7 +451,12 @@ exit_all_off:
 
 
 
-
+@ Function Declaration : int win
+@
+@ Input: NONE
+@ Returns: r0
+@
+@ Here is the actual function
 win:
 
     push    {r4-r5, lr}                     @ Put aside registers we want to restore later
@@ -483,7 +479,7 @@ win:
         blt     win_led_loop_on             @ if the led counter is less than 8, branch back to win_led_loop
 
 
-        ldr     r0, =0x666666               @ copy our delay to r0 so the busy delay can use the delay value
+        ldr     r0, =win_delay              @ load our delay to r0 so the busy delay can use the delay value
         bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
 
 
@@ -503,7 +499,7 @@ win:
         blt     win_led_loop_off            @ if the led counter is less than 8, branch back to win_led_loop
 
 
-        ldr     r0, =0x666666               @ copy our delay to r0 so the busy delay can use the delay value
+        ldr     r0, =win_delay              @ load our delay to r0 so the busy delay can use the delay value
         bl      busy_delay                  @ call the busy_delay function to add a delay between the next toggle
 
 
@@ -521,6 +517,13 @@ win:
 
 
 
+
+@ Function Declaration : int lose
+@
+@ Input: NONE
+@ Returns: r0
+@
+@ Here is the actual function
 lose: 
 
     push    {lr}                            @ Put aside registers we want to restore later  
