@@ -71,6 +71,11 @@ _an_a4_tick_setup:
     str     r1, [r3]                        @ store target into a4_target
 
 
+    ldr     r3, =a4_accel_ticks             @ load address into r3 so parameters don't get overwritten
+    mov     r0, #accel_delay                @ copy value of accel_delay into r0
+    str     r0, [r3]                        @ store target into a4_accel_ticks
+
+
     ldr     r1, =a4_ticks                   @ get the address of a4_ticks
     mov     r3, #game_time_constant         @ copy 1000 to r3 to use for tick timer
     mul     r2, r3                          @ multiply game_time by 1000 to convert into seconds
@@ -124,12 +129,6 @@ _an_a4_tick:
 
     push    {r4-r7, lr}                     @ Put aside registers we want to restore later
 
-    ldr     r1, =a4_reset_delay             @ load address of a4_reset_delay into r1
-    ldr     r7, [r1]                        @ load the reset delay into r7 to use later
-
-    ldr     r1, =a4_target                  @ load address of a4_target into r1
-    ldr     r4, [r1]                        @ load the traget into r4 to use later
-
 
     ldr     r1, =a4_ticks                   @ load address of a4_ticks into r1
     ldr     r0, [r1]                        @ load current ticks value 
@@ -138,6 +137,9 @@ _an_a4_tick:
     str     r0, [r1]                        @ store value back into r1
 
 
+    cmp     r0, #1                          @ compare a4 ticks to something greater than 0
+    beq     lose_led                        @ if the values are equal go to lose_led
+    
 
     ldr     r1, =a4_accel_ticks             @ load address of a4_accel_ticks into r1
     ldr     r0, [r1]                        @ load current a4_accel_ticks ticks value
@@ -146,10 +148,12 @@ _an_a4_tick:
     bgt     exit_tick                       @ go to exit_tick if the tick isn't 0
 
     
-
     bl      accelero_check                  @ go to accelero_check to see which led to turn on
 
     mov     r6, r0                          @ copy LED index into r6 incase we need to use later
+
+    ldr     r1, =a4_target                  @ load address of a4_target into r1
+    ldr     r4, [r1]                        @ load the traget into r4 to use later
 
     cmp     r6, r4                          @ compare LED index to target
     bne     exit_target_check               @ if they are not equal, go to exit_target_check
@@ -172,13 +176,12 @@ _an_a4_tick:
 
 
 
-
-
 exit_target_check:
 
-
+    ldr     r1, =a4_reset_delay             @ load address of a4_reset_delay into r1
+    ldr     r0, [r1]                        @ load the reset delay into r0 to use later
     ldr     r1, =a4_delay                   @ load address of a4_delay
-    str     r7, [r1]                        @ store the reset value into a4_delay
+    str     r0, [r1]                        @ store the reset value into a4_delay
 
 
 
@@ -186,6 +189,13 @@ exit_target_check:
     mov     r0, #accel_delay                @ reset the accel tick value
     str     r0, [r1]                        @ store the value into a4_accel_ticks
 
+    bl      exit_tick
+
+
+lose_led:
+
+
+    bl      lose                            @ call lose function
 
 
 exit_tick:
@@ -453,10 +463,10 @@ exit_all_off:
 
 win:
 
-    push    {r4-r5, lr}
+    push    {r4-r5, lr}                     @ Put aside registers we want to restore later
 
-    mov     r4, #0
-    mov     r5, #2
+    mov     r4, #0                          @ copy 0 to r4 for LED counter
+    mov     r5, #2                          @ copy 2 to r5 for twice blink counter
 
 
     win_led_loop_on:
@@ -504,9 +514,28 @@ win:
         bgt     win_led_loop_on             @ branch back to win loop if the value if greater than 0
 
 
-    pop     {r4-r5, lr}
+    pop     {r4-r5, lr}                     @ Bring all the register values back
 
-    bx      lr 
+    bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
+
+
+
+
+lose: 
+
+    push    {lr}                            @ Put aside registers we want to restore later  
+
+
+    bl      all_off                         @ call the all_off function to turn off all LED's
+
+    ldr     r1, =a4_target                  @ load the address of a4_target
+    ldr     r0, [r1]                        @ load target into r0
+    bl      BSP_LED_On                      @ call BSP_LED_On to turn on specified LED
+
+
+    pop     {lr}                            @ Bring all the register values back
+
+    bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
 
 
 

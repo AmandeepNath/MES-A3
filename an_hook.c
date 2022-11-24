@@ -56,7 +56,7 @@ void _an_a4(int action)
 
   if(fetch_status) {
   	// default value
-  	game_time = 10;
+  	game_time = 5;
   }
 
 
