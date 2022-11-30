@@ -1,11 +1,11 @@
 /*
 * FILE : an_hook.c
-* PROJECT : SENG2010 - Assignment #4
+* PROJECT : SENG2010 - Assignment #5
 * PROGRAMMER : Amandeep Nath
-* FIRST VERSION : 2022-11-17
-* DESCRIPTION : This program will allow the user to play a simple game. In this game the user can use the board
-*               to move an LED in cricle. If they land the LED and hold it on the target, the user wins.
-*               If they are unable to do this in the specified time, they lose.
+* FIRST VERSION : 2022-11-29
+* DESCRIPTION : This program will allow the user to blink all LED's forever.
+*               After that they can stop the watchdog with the user button
+*               and the board will restart.
 * 
 */
 
@@ -14,111 +14,104 @@
 #include <ctype.h>
 
 #include "common.h"
-
-// Prototype for the tilt game function
-int _an_a4_tick_setup(int delay, int target, int game_time);
+#include "watchdog.h"
 
 
 
-
-/*
-* FUNCTION    : _an_a4
-*
-* DESCRIPTION : This function is used to setup the tilt game
-*
-* PARAMETERS  :	delay				: target			: game_time
-*				        int delay	        : delay
-*				        int target	      : target
-*			          int	game_time		  : game time
-* 
-* RETURNS	  : NONE
-*/
-void _an_a4(int action)
+void _an_lab8test(int action)
 {
 
-  // The prompt that is shown when the user uses the help command with xxTilt 
+  // The prompt that is shown when the user uses the help command with lab8test 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
-    printf("Tilt Game\n\n"
-	   "This function will allow you to play the tilt game\n"
+    printf("Lab 8 watchdog\n\n"
+	   "This function will allow you to test lab8 watchdog\n"
 	   );
 
     return;
   }
 
-  uint32_t delay;
+
+  // first argument for the timeout parameter
+  uint32_t timeout;
 
   int fetch_status;
 
-  fetch_status = fetch_uint32_arg(&delay);
+  fetch_status = fetch_uint32_arg(&timeout);
 
   if(fetch_status) {
-  	// default value
-  	delay = 500;
+  	// Use a default value
+  	timeout = 500;
   }
 
-  uint32_t target;
-
-  fetch_status = fetch_uint32_arg(&target);
-
-  if(fetch_status) {
-  	// default value
-  	target = 7;
-  }
-
-  uint32_t game_time;
-
-  fetch_status = fetch_uint32_arg(&game_time);
-
-  if(fetch_status) {
-  	// default value
-  	game_time = 5;
-  }
+  //hiwdg.Init.Reload = timeout;
 
 
+  mes_InitIWDG(timeout);
   
-  _an_a4_tick_setup(delay, target, game_time);
+  mes_IWDGStart();
 
 
   printf("Play Again?\n\n");
   
 
 }
-ADD_CMD("anTilt", _an_a4,"Tilt Game")
+ADD_CMD("lab8test", _an_lab8test,"Lab8 Test")
 
 
 
 
-
-// Prototype for the tickfunction
-int _an_a4_tick();
+int _an_watchdog_start(int timeout, int delay);
 
 
-/*
-* FUNCTION    : a4_tick
-*
-* DESCRIPTION : This function is used to run a tick
-*
-* PARAMETERS  :	NONE
-* 
-* RETURNS	  : NONE
-*/
-void a4_tick(int action)
+void _an_A5(int action)
 {
 
-  // The prompt that is shown when the user uses the help command with A4tick 
+  // The prompt that is shown when the user uses the help command with anWatch 
   if(action==CMD_SHORT_HELP) return;
   if(action==CMD_LONG_HELP) {
-    printf("A4 Tick Handler\n\n"
-	   "This function will allow you to play with the tick handler\n"
+    printf("Watchdog for A5\n\n"
+	   "This command stops the watchdog refresh\n"
 	   );
 
     return;
   }
 
 
-  printf("A4 Tick handler: %d\n\n", _an_a4_tick());
+  // first argument for the timeout parameter
+  uint32_t timeout;
+
+  int fetch_status;
+
+  fetch_status = fetch_uint32_arg(&timeout);
+
+  if(fetch_status) {
+  	// Use a default value
+  	timeout = 500;
+  }
+
+
+  // second argument for the delay parameter
+  uint32_t delay;
+
+  fetch_status = fetch_uint32_arg(&delay);
+
+  if(fetch_status) {
+  	// Use a default value
+  	delay = 500;
+  }
+
+  //hiwdg.Init.Reload = timeout;
+
+  mes_InitIWDG(timeout);
   
 
+  mes_IWDGStart();
+
+  _an_watchdog_start(timeout, delay);
+
+  printf("Stopped Watchdog\n\n");
+
+
 }
-ADD_CMD("A4tick", a4_tick,"A4 Tick Handler")
+ADD_CMD("anWatch", _an_A5,"Stop refreshing watchdog")
