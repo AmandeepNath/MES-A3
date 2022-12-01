@@ -16,6 +16,55 @@
 #include "common.h"
 #include "watchdog.h"
 
+int lab8();
+
+void _an_lab8(int action)
+{
+
+  // The prompt that is shown when the user uses the help command with lab8test 
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Lab 8 watchdog\n\n"
+	   "This function will allow you to test lab8 watchdog\n"
+	   );
+
+    return;
+  }
+
+  lab8();
+
+  printf("Play Again?\n\n");
+  
+
+}
+ADD_CMD("lab8", _an_lab8,"Lab8")
+
+
+int lab81();
+
+void _an_lab81(int action)
+{
+
+  // The prompt that is shown when the user uses the help command with lab8test 
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Lab 8 watchdog\n\n"
+	   "This function will allow you to test lab8 watchdog\n"
+	   );
+
+    return;
+  }
+
+  lab81();
+
+  printf("Play Again?\n\n");
+  
+
+}
+ADD_CMD("lab81", _an_lab81,"Lab8")
+
+
+
 
 
 void _an_lab8test(int action)
@@ -87,7 +136,7 @@ void _an_A5(int action)
 
   if(fetch_status) {
   	// Use a default value
-  	timeout = 500;
+  	timeout = 100;
   }
 
 
@@ -101,12 +150,12 @@ void _an_A5(int action)
   	delay = 500;
   }
 
-  //hiwdg.Init.Reload = timeout;
+ 
 
-  mes_InitIWDG(timeout);
+  //mes_InitIWDG(timeout);
   
 
-  mes_IWDGStart();
+  //mes_IWDGStart();
 
   _an_watchdog_start(timeout, delay);
 
@@ -115,3 +164,31 @@ void _an_A5(int action)
 
 }
 ADD_CMD("anWatch", _an_A5,"Stop refreshing watchdog")
+
+
+
+
+
+int _an_a5_tick_handler();
+
+
+void _an_A5_tick(int action)
+{
+
+  // The prompt that is shown when the user uses the help command with anWatch 
+  if(action==CMD_SHORT_HELP) return;
+  if(action==CMD_LONG_HELP) {
+    printf("Watchdog for A5\n\n"
+	   "This command stops the watchdog refresh\n"
+	   );
+
+    return;
+  }
+
+  _an_a5_tick_handler();
+
+  printf("Stopped Watchdog\n\n");
+
+
+}
+ADD_CMD("anTick", _an_A5_tick,"Stop refreshing watchdog")
