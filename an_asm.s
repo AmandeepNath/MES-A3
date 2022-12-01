@@ -3,6 +3,7 @@
 .data
 
 a5_timeout: .word 0
+a5_start_blinks: .word 0
 a5_on_delay: .word 0
 a5_off_delay: .word 0
 a5_reset_delay: .word 0
@@ -58,6 +59,11 @@ _an_watchdog_start:
 
     ldr     r3, =a5_timeout                 @ load address into r3 so parameters don't get overwritten
     str     r0, [r3]                        @ store timeout into a5_timeout
+
+
+    ldr     r3, =a5_start_blinks            @ load address into r3 so parameters don't get overwritten
+    mov     r0, #1                          @ copy constant 1 into r0
+    str     r0, [r3]                        @ store constant 1 into a5_start_blinks
 
 
     ldr     r3, =a5_on_delay                @ load address into r3 so parameters don't get overwritten
@@ -116,6 +122,14 @@ _an_watchdog_start:
 _an_a5_tick_handler:
 
     push    {lr}                            @ Put aside registers we want to restore later
+
+
+
+    ldr     r1, =a5_start_blinks            @ load address of a5_start_blinks into r1
+    ldr     r0, [r1]                        @ load 1 flag into r1 
+    cmp     r0, #0                          @ compare r0 to 0
+    beq     exit_tick                       @ go to exit_tick if it is equal to 0
+
 
 
     ldr     r1, =a5_on_delay                @ load address of a5_on_delay into r1

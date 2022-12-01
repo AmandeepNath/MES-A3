@@ -136,7 +136,7 @@ void _an_A5(int action)
 
   if(fetch_status) {
   	// Use a default value
-  	timeout = 100;
+  	timeout = 1000;
   }
 
 
