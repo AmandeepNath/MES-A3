@@ -16,98 +16,6 @@
 #include "common.h"
 #include "watchdog.h"
 
-int lab8();
-
-void _an_lab8(int action)
-{
-
-  // The prompt that is shown when the user uses the help command with lab8test 
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
-    printf("Lab 8 watchdog\n\n"
-	   "This function will allow you to test lab8 watchdog\n"
-	   );
-
-    return;
-  }
-
-  lab8();
-
-  printf("Play Again?\n\n");
-  
-
-}
-ADD_CMD("lab8", _an_lab8,"Lab8")
-
-
-int lab81();
-
-void _an_lab81(int action)
-{
-
-  // The prompt that is shown when the user uses the help command with lab8test 
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
-    printf("Lab 8 watchdog\n\n"
-	   "This function will allow you to test lab8 watchdog\n"
-	   );
-
-    return;
-  }
-
-  lab81();
-
-  printf("Play Again?\n\n");
-  
-
-}
-ADD_CMD("lab81", _an_lab81,"Lab8")
-
-
-
-
-
-void _an_lab8test(int action)
-{
-
-  // The prompt that is shown when the user uses the help command with lab8test 
-  if(action==CMD_SHORT_HELP) return;
-  if(action==CMD_LONG_HELP) {
-    printf("Lab 8 watchdog\n\n"
-	   "This function will allow you to test lab8 watchdog\n"
-	   );
-
-    return;
-  }
-
-
-  // first argument for the timeout parameter
-  uint32_t timeout;
-
-  int fetch_status;
-
-  fetch_status = fetch_uint32_arg(&timeout);
-
-  if(fetch_status) {
-  	// Use a default value
-  	timeout = 500;
-  }
-
-  //hiwdg.Init.Reload = timeout;
-
-
-  mes_InitIWDG(timeout);
-  
-  mes_IWDGStart();
-
-
-  printf("Play Again?\n\n");
-  
-
-}
-ADD_CMD("lab8test", _an_lab8test,"Lab8 Test")
-
-
 
 
 int _an_watchdog_start(int timeout, int delay);
@@ -152,14 +60,14 @@ void _an_A5(int action)
 
  
 
-  //mes_InitIWDG(timeout);
+  mes_InitIWDG(timeout);
   
 
-  //mes_IWDGStart();
+  mes_IWDGStart();
 
   _an_watchdog_start(timeout, delay);
 
-  printf("Stopped Watchdog\n\n");
+  printf("Started Blinking\n\n");
 
 
 }

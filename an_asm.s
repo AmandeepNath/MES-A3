@@ -7,6 +7,7 @@ a5_start_blinks: .word 0
 a5_on_delay: .word 0
 a5_off_delay: .word 0
 a5_reset_delay: .word 0
+a5_watchdog_flag: .word 0
 
 LEDaddress: .word 0x48001014
 
@@ -82,14 +83,6 @@ _an_watchdog_start:
 
 
 
-@@@@@@@@@@@@@@@@@@@@@@@@@ Use code for later @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    @bl      mes_IWDGRefresh
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-
-
-
 @ Test code for my own new function called from C
 @ This is a comment. Anything after an @ symbol is ignored.
 @@ This is also a comment. Some people use double @@ symbols.
@@ -126,11 +119,20 @@ _an_a5_tick_handler:
 
 
     ldr     r1, =a5_start_blinks            @ load address of a5_start_blinks into r1
-    ldr     r0, [r1]                        @ load 1 flag into r1 
+    ldr     r0, [r1]                        @ load 1 flag into r0 
     cmp     r0, #0                          @ compare r0 to 0
     beq     exit_tick                       @ go to exit_tick if it is equal to 0
 
 
+    ldr     r1, =a5_watchdog_flag           @ load address of a5_watchdog_flag into r1
+    ldr     r0, [r1]                        @ load flag into r0
+    cmp     r0, #1                          @ compare r0 with watchdog flag
+    beq     watchdog_skip                   @ branch to watchdog_skip if they are equal, refresh watchdog if they are not
+
+    bl      mes_IWDGRefresh                 @ call watchdog refresh
+
+
+watchdog_skip:
 
     ldr     r1, =a5_on_delay                @ load address of a5_on_delay into r1
     ldr     r0, [r1]                        @ load current ticks value 
@@ -144,7 +146,7 @@ _an_a5_tick_handler:
     ldr     r1, [r1]		                @ Dereference r1 to get the value we want
     ldrh    r0, [r1]		                @ Get the current state of that GPIO (half word only)
 
-    orr     r0, r0, #0xFF00		            @ Use bitwise OR (ORR) to set the bit at 0x0100
+    orr     r0, r0, #0xFF00		            @ Use bitwise OR (ORR) to set the bit at 0xFF00
     strh    r0, [r1]		                @ Write the half word back to the memory address for the GPIO
 
 
@@ -176,6 +178,9 @@ _an_a5_tick_handler:
     str     r0, [r1]                        @ store value reset into r1
 
 
+
+
+
 exit_tick:
 
 
@@ -191,8 +196,6 @@ exit_tick:
 
 
 
-
-
 @ Test code for my own new function called from C
 @ This is a comment. Anything after an @ symbol is ignored.
 @@ This is also a comment. Some people use double @@ symbols.
@@ -211,73 +214,28 @@ exit_tick:
     .syntax unified                     @ Sets the instruction set to the new unified ARM + THUMB
                                         @ instructions. The default is divided (separate instruction sets)
 
-    .global lab8          @ Make the symbol name for the function visible to the linker
+    .global watchdog_flag          @ Make the symbol name for the function visible to the linker
 
     .code 16                            @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func                         @ Specifies that the following symbol is the name of a THUMB
                                         @ encoded function. Necessary for interlinking between ARM and THUMB code.
 
-    .type lab8, %function     @ Declares that the symbol is a function (not strictly required)
+    .type watchdog_flag, %function     @ Declares that the symbol is a function (not strictly required)
 
-lab8:
+watchdog_flag:
 
-    ldr     r1, =LEDaddress	                @ Load the GPIO address we need
-    ldr     r1, [r1]		                @ Dereference r1 to get the value we want
-    ldrh    r0, [r1]		                @ Get the current state of that GPIO (half word only)
+    push    {lr}
+    
+    ldr     r1, =a5_watchdog_flag	                @ Load the GPIO address we need
+    mov     r0, #1
+    str     r0, [r1]		                @ Write the half word back to the memory address for the GPIO
 
-    orr     r0, r0, #0xFF00		            @ Use bitwise OR (ORR) to set the bit at 0x0100
-    strh    r0, [r1]		                @ Write the half word back to the memory address for the GPIO
-
+    pop     {lr}
 
     bx      lr 
 
 
 
-
-
-
-
-
-
-
-
-@ Test code for my own new function called from C
-@ This is a comment. Anything after an @ symbol is ignored.
-@@ This is also a comment. Some people use double @@ symbols.
-    .code 16                            @ This directive selects the instruction set being generated.
-                                        @ The value 16 selects Thumb, with the value 32 selecting ARM.
-
-    .text                               @ Tell the assembler that the upcoming section is to be considered
-                                        @ assembly language instructions - Code section (text -> ROM)
-
-
-
-@@ Function Header Block
-    .align 2                            @ Code alignment - 2^n alignment (n=2)
-                                        @ This causes the assembler to use 4 byte alignment
-
-    .syntax unified                     @ Sets the instruction set to the new unified ARM + THUMB
-                                        @ instructions. The default is divided (separate instruction sets)
-
-    .global lab81          @ Make the symbol name for the function visible to the linker
-
-    .code 16                            @ 16bit THUMB code (BOTH .code and .thumb_func are required)
-    .thumb_func                         @ Specifies that the following symbol is the name of a THUMB
-                                        @ encoded function. Necessary for interlinking between ARM and THUMB code.
-
-    .type lab81, %function     @ Declares that the symbol is a function (not strictly required)
-
-lab81:
-
-    ldr     r1, =LEDaddress	                @ Load the GPIO address we need
-    ldr     r1, [r1]		                @ Dereference r1 to get the value we want
-    ldrh    r0, [r1]		                @ Get the current state of that GPIO (half word only)
-
-    and     r0, r0, #0x00FF		            @ Use bitwise OR (ORR) to set the bit at 0x0100
-    strh    r0, [r1]		                @ Write the half word back to the memory address for the GPIO
-
-
-    bx      lr
 
 
 .size _an_watchdog_start, .-_an_watchdog_start  @@ - symbol size (not strictly required, but makes the debugger happy)
