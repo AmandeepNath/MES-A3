@@ -3,11 +3,10 @@
 .data
 
 a5_timeout: .word 0
-a5_start_blinks: .word 0
 a5_on_delay: .word 0
 a5_off_delay: .word 0
 a5_reset_delay: .word 0
-a5_watchdog_flag: .word 0
+a5_GP_flag: .word 0
 
 LEDaddress: .word 0x48001014
 
@@ -58,13 +57,9 @@ LEDaddress: .word 0x48001014
 _an_watchdog_start:
 
 
-    ldr     r3, =a5_timeout                 @ load address into r3 so parameters don't get overwritten
-    str     r0, [r3]                        @ store timeout into a5_timeout
-
-
-    ldr     r3, =a5_start_blinks            @ load address into r3 so parameters don't get overwritten
+    ldr     r3, =a5_GP_flag                 @ load address into r3 so parameters don't get overwritten
     mov     r0, #1                          @ copy constant 1 into r0
-    str     r0, [r3]                        @ store constant 1 into a5_start_blinks
+    str     r0, [r3]                        @ store constant 1 into a5_GP_flag
 
 
     ldr     r3, =a5_on_delay                @ load address into r3 so parameters don't get overwritten
@@ -118,15 +113,15 @@ _an_a5_tick_handler:
 
 
 
-    ldr     r1, =a5_start_blinks            @ load address of a5_start_blinks into r1
+    ldr     r1, =a5_GP_flag                 @ load address of a5_GP_flag into r1
     ldr     r0, [r1]                        @ load 1 flag into r0 
     cmp     r0, #0                          @ compare r0 to 0
     beq     exit_tick                       @ go to exit_tick if it is equal to 0
 
 
-    ldr     r1, =a5_watchdog_flag           @ load address of a5_watchdog_flag into r1
+    ldr     r1, =a5_GP_flag                 @ load address of a5_GP_flag into r1
     ldr     r0, [r1]                        @ load flag into r0
-    cmp     r0, #1                          @ compare r0 with watchdog flag
+    cmp     r0, #2                          @ compare r0 with watchdog flag
     beq     watchdog_skip                   @ branch to watchdog_skip if they are equal, refresh watchdog if they are not
 
     bl      mes_IWDGRefresh                 @ call watchdog refresh
@@ -214,25 +209,25 @@ exit_tick:
     .syntax unified                     @ Sets the instruction set to the new unified ARM + THUMB
                                         @ instructions. The default is divided (separate instruction sets)
 
-    .global watchdog_flag          @ Make the symbol name for the function visible to the linker
+    .global _an_a5_button_handler          @ Make the symbol name for the function visible to the linker
 
     .code 16                            @ 16bit THUMB code (BOTH .code and .thumb_func are required)
     .thumb_func                         @ Specifies that the following symbol is the name of a THUMB
                                         @ encoded function. Necessary for interlinking between ARM and THUMB code.
 
-    .type watchdog_flag, %function     @ Declares that the symbol is a function (not strictly required)
+    .type _an_a5_button_handler, %function     @ Declares that the symbol is a function (not strictly required)
 
-watchdog_flag:
+_an_a5_button_handler:
 
-    push    {lr}
+    push    {lr}                            @ Put aside registers we want to restore later
     
-    ldr     r1, =a5_watchdog_flag	                @ Load the GPIO address we need
-    mov     r0, #1
-    str     r0, [r1]		                @ Write the half word back to the memory address for the GPIO
+    ldr     r1, =a5_GP_flag	                @ load address of a5_GP_flag into r1
+    mov     r0, #2                          @ copy 2 into a5_GP_flag for watchdog flag
+    str     r0, [r1]		                @ store value into a5_GP_flag to use as flag
 
-    pop     {lr}
+    pop     {lr}                            @ Bring all the register values back
 
-    bx      lr 
+    bx      lr                              @ Return (Branch eXchange) to the address in the link register (lr)
 
 
 
